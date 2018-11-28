@@ -82,7 +82,10 @@ server.get('/api/me', protected, (req, res) => {
     .catch(err => res.send(err));
 });
 
-server.get('/api/users', protected, (req, res) => {
+// most companies have levels of access
+// users, roles, permissions
+
+server.get('/api/users', protected, checkRole('sales'), (req, res) => {
   db('users')
     .select('id', 'username', 'password') // ***************************** added password to the select
     .then(users => {
@@ -90,6 +93,16 @@ server.get('/api/users', protected, (req, res) => {
     })
     .catch(err => res.send(err));
 });
+
+const checkRole = (role) => {
+  return function(req, res, next) {
+    if (req.decodedToken && req.decodedToken.roles.includes(role)) {
+      next();
+    } else {
+      res.status(403).json({message: 'You have no access to this resource.'})
+    }
+  }
+}
 
 server.post('/api/register', (req, res) => {
   // grab username and password from body
