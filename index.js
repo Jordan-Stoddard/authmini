@@ -85,7 +85,7 @@ server.get('/api/me', protected, (req, res) => {
 // most companies have levels of access
 // users, roles, permissions
 
-server.get('/api/users', protected, checkRole('sales'), (req, res) => {
+server.get('/api/users', protected, (req, res) => {
   db('users')
     .select('id', 'username', 'password') // ***************************** added password to the select
     .then(users => {
